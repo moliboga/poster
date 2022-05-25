@@ -22,8 +22,8 @@ public class PostController {
     }
 
     @PostMapping
-    public Post create(@RequestBody PostDto instance) {
-        return postService.create(dtoMapping.mapDtoToPost(instance));
+    public PostDto create(@RequestBody PostDto instance) {
+        return dtoMapping.mapPostToDto(postService.create(dtoMapping.mapDtoToPost(instance)));
     }
 
     @GetMapping
