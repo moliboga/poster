@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class PostDto extends BaseDto{
     private String content;
+    private int repliesCount;
     private Long userId;
     private Long repliedAt;
     private List<PostDto> replies;

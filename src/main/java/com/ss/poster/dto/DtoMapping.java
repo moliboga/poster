@@ -23,9 +23,11 @@ public class DtoMapping {
     public Post mapDtoToPost(PostDto postDto){
         Post post = new Post();
         post.setId(postDto.getId());
+
         post.setCreatedAt(postDto.getCreatedDate());
         post.setUpdatedAt(postDto.getUpdatedDate());
         post.setContent(postDto.getContent());
+
         post.setUser(userService.getById(postDto.getUserId()));
 
         Long repliedAtPostId = postDto.getRepliedAt();
@@ -44,14 +46,27 @@ public class DtoMapping {
                     return Objects.equals(id, postDto.getId());
                 })
                 .collect(Collectors.toList()));
+
         return post;
     }
 
     public PostDto mapPostToDtoWithoutReplies(Post post){
         PostDto postDto = new PostDto();
+
         postDto.setId(post.getId());
         postDto.setCreatedDate(post.getCreatedAt());
         postDto.setUpdatedDate(post.getUpdatedAt());
+
+        postDto.setRepliesCount(postService
+                .getAll().stream()
+                .filter(p -> {
+                    Long id = 0L;
+                    if (p.getRepliedAt() != null) {
+                        id = p.getRepliedAt().getId();
+                    }
+                    return Objects.equals(id, postDto.getId());
+                }).toList().size());
+
         postDto.setContent(post.getContent());
         postDto.setUserId(post.getUser().getId());
 
