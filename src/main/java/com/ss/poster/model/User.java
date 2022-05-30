@@ -26,7 +26,7 @@ public class User extends BaseModel {
     @Column()
     private String info;
 
-    @JsonManagedReference(value = "user-post")
+    @JsonManagedReference(value = "user-make-post")
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     List<Post> posts = new ArrayList<>();

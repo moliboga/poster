@@ -2,8 +2,13 @@ package com.ss.poster.controller;
 
 import com.ss.poster.dto.PostDto;
 import com.ss.poster.dto.DtoMapping;
+import com.ss.poster.dto.UserDto;
+import com.ss.poster.dto.UserWithOnlyId;
 import com.ss.poster.model.Post;
+import com.ss.poster.model.User;
 import com.ss.poster.service.PostService;
+import com.ss.poster.service.UserService;
+import org.apache.catalina.filters.ExpiresFilter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,5 +49,17 @@ public class PostController {
         PostDto postDto = dtoMapping.mapPostToDto(postService.getById(id));
         postService.delete(id);
         return postDto;
+    }
+
+    @PutMapping("/{id}/like")
+    public PostDto likePost(@RequestBody UserWithOnlyId user, @PathVariable("id") Long postId){
+        return dtoMapping.mapPostToDto(postService.like(postId, user.getUserId()));
+    }
+
+    @GetMapping("/{id}/likes")
+    public List<UserDto> getLikes(@PathVariable("id") Long postId){
+        return postService.getLikesByPostId(postId)
+                .stream().map(dtoMapping::mapUserToDtoWithoutPosts)
+                .collect(Collectors.toList());
     }
 }
