@@ -9,9 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -28,7 +26,7 @@ public class User extends BaseModel {
     @Column()
     private String info;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-post")
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     List<Post> posts = new ArrayList<>();

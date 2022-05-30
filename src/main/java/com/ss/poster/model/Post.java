@@ -10,9 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -25,17 +23,17 @@ public class Post extends BaseModel {
     @Column
     private String content;
 
-    @JsonBackReference
+    @JsonBackReference(value = "user-post")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @JsonBackReference
+    @JsonBackReference(value = "post-reply")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "replied_at")
     private Post repliedAt;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "post-reply")
     @OneToMany(mappedBy = "repliedAt", fetch = FetchType.LAZY,
             cascade = CascadeType.MERGE)
     List<Post> replies = new ArrayList<>();
