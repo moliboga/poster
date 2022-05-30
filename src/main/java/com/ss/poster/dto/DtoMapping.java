@@ -27,23 +27,39 @@ public class DtoMapping {
         post.setUpdatedAt(postDto.getUpdatedDate());
         post.setContent(postDto.getContent());
         post.setUser(userService.getById(postDto.getUserId()));
+        post.setRepliedAt(postService.getById(postDto.getRepliedAt()));
+        post.setReplies(postService
+                .getAll().stream()
+                .filter(p -> Objects.equals(p.getRepliedAt().getId(), postDto.getId()))
+                .collect(Collectors.toList()));
         return post;
     }
 
-    public PostDto mapPostToDto(Post post){
+    public PostDto mapPostToDtoWithoutReplies(Post post){
         PostDto postDto = new PostDto();
         postDto.setId(post.getId());
         postDto.setCreatedDate(post.getCreatedAt());
         postDto.setUpdatedDate(post.getUpdatedAt());
         postDto.setContent(post.getContent());
         postDto.setUserId(post.getUser().getId());
+        postDto.setRepliedAt(post.getRepliedAt().getId());
+        postDto.setReplies(new ArrayList<>());
+        return postDto;
+    }
+
+    public PostDto mapPostToDto(Post post){
+        PostDto postDto = mapPostToDtoWithoutReplies(post);
+        postDto.setReplies(post
+                .getReplies().stream()
+                .map(this::mapPostToDtoWithoutReplies)
+                .collect(Collectors.toList()));
         return postDto;
     }
 
     public UserDto mapUserToDto(User user){
         UserDto userDto = mapUserToDtoWithoutPosts(user);
         userDto.setPosts(user.getPosts()
-                .stream().map(this::mapPostToDto)
+                .stream().map(this::mapPostToDtoWithoutReplies)
                 .collect(Collectors.toList()));
         return userDto;
     }

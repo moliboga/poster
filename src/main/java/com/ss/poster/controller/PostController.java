@@ -29,7 +29,7 @@ public class PostController {
     @GetMapping
     public List<PostDto> getAll() {
         return postService.getAll().stream()
-                .map(dtoMapping::mapPostToDto)
+                .map(dtoMapping::mapPostToDtoWithoutReplies)
                 .collect(Collectors.toList());
     }
 
