@@ -11,6 +11,5 @@ public class PostDto extends BaseDto{
     private String content;
     private int repliesCount;
     private int likesCount;
-    private List<Long> likes;
     private List<PostDto> replies;
 }

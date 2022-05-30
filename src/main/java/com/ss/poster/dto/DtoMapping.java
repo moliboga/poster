@@ -47,15 +47,6 @@ public class DtoMapping {
                 })
                 .collect(Collectors.toList()));
 
-        post.setLikes(postDto.getLikes().stream()
-                .map(userId ->
-                        userService
-                                .getAll().stream()
-                                .filter(user -> user.getId()
-                                        .equals(userId))
-                                .findAny().get())
-                .collect(Collectors.toList()));
-
         return post;
     }
 
@@ -88,7 +79,6 @@ public class DtoMapping {
         }
 
         postDto.setReplies(new ArrayList<>());
-        postDto.setLikes(new ArrayList<>());
         postDto.setLikesCount(post.getLikes().size());
 
         return postDto;
