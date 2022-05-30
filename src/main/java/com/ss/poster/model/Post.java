@@ -37,6 +37,6 @@ public class Post extends BaseModel {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "repliedAt", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+            cascade = CascadeType.MERGE)
     List<Post> replies = new ArrayList<>();
 }

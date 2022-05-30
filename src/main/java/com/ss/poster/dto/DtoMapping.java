@@ -27,10 +27,22 @@ public class DtoMapping {
         post.setUpdatedAt(postDto.getUpdatedDate());
         post.setContent(postDto.getContent());
         post.setUser(userService.getById(postDto.getUserId()));
-        post.setRepliedAt(postService.getById(postDto.getRepliedAt()));
+
+        Long repliedAtPostId = postDto.getRepliedAt();
+        if (repliedAtPostId == null){
+            repliedAtPostId = 0L;
+        }
+        post.setRepliedAt(postService.getById(repliedAtPostId));
+
         post.setReplies(postService
                 .getAll().stream()
-                .filter(p -> Objects.equals(p.getRepliedAt().getId(), postDto.getId()))
+                .filter(p -> {
+                    Long id = 0L;
+                    if (p.getRepliedAt() != null){
+                        id = p.getRepliedAt().getId();
+                    }
+                    return Objects.equals(id, postDto.getId());
+                })
                 .collect(Collectors.toList()));
         return post;
     }
@@ -42,7 +54,15 @@ public class DtoMapping {
         postDto.setUpdatedDate(post.getUpdatedAt());
         postDto.setContent(post.getContent());
         postDto.setUserId(post.getUser().getId());
-        postDto.setRepliedAt(post.getRepliedAt().getId());
+
+        Post repliedAt = post.getRepliedAt();
+        if (repliedAt == null){
+            postDto.setRepliedAt(0L);
+        }
+        else{
+            postDto.setRepliedAt(repliedAt.getId());
+        }
+
         postDto.setReplies(new ArrayList<>());
         return postDto;
     }
