@@ -32,4 +32,16 @@ public class PostController {
                 .map(dtoMapping::mapPostToDto)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/{id}")
+    public PostDto getById(@PathVariable("id") Long id){
+        return dtoMapping.mapPostToDto(postService.getById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public PostDto delete(@PathVariable("id") Long id){
+        PostDto postDto = dtoMapping.mapPostToDto(postService.getById(id));
+        postService.delete(id);
+        return postDto;
+    }
 }

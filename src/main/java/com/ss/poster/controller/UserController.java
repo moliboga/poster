@@ -1,6 +1,7 @@
 package com.ss.poster.controller;
 
 import com.ss.poster.dto.DtoMapping;
+import com.ss.poster.dto.PostDto;
 import com.ss.poster.dto.UserDto;
 import com.ss.poster.model.User;
 import com.ss.poster.service.UserService;
@@ -22,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User instance) {
-        return userService.create(instance);
+    public UserDto create(@RequestBody UserDto instance) {
+        return dtoMapping.mapUserToDto(userService.create(dtoMapping.mapDtoToUser(instance)));
     }
 
     @GetMapping
@@ -31,5 +32,22 @@ public class UserController {
         return userService.getAll().stream()
                 .map(dtoMapping::mapUserToDto)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public UserDto getById(@PathVariable("id") Long id){
+        return dtoMapping.mapUserToDto(userService.getById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public UserDto delete(@PathVariable("id") Long id){
+        UserDto userDto = dtoMapping.mapUserToDto(userService.getById(id));
+        userService.delete(id);
+        return userDto;
+    }
+
+    @PutMapping(value="/{id}")
+    public UserDto update(@PathVariable(value = "id") Long id, @RequestBody User instance) {
+        return dtoMapping.mapUserToDto(userService.update(id, instance));
     }
 }
