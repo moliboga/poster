@@ -30,7 +30,7 @@ public class UserController {
     @GetMapping
     public List<UserDto> getAll() {
         return userService.getAll().stream()
-                .map(dtoMapping::mapUserToDto)
+                .map(dtoMapping::mapUserToDtoWithoutPosts)
                 .collect(Collectors.toList());
     }
 

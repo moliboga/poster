@@ -7,8 +7,6 @@ import com.ss.poster.service.UserService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -43,6 +41,14 @@ public class DtoMapping {
     }
 
     public UserDto mapUserToDto(User user){
+        UserDto userDto = mapUserToDtoWithoutPosts(user);
+        userDto.setPosts(user.getPosts()
+                .stream().map(this::mapPostToDto)
+                .collect(Collectors.toList()));
+        return userDto;
+    }
+
+    public UserDto mapUserToDtoWithoutPosts(User user){
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setCreatedDate(user.getCreatedAt());
@@ -50,9 +56,7 @@ public class DtoMapping {
         userDto.setNickname(user.getNickname());
         userDto.setName(user.getName());
         userDto.setInfo(user.getInfo());
-        userDto.setPosts(user.getPosts()
-                .stream().map(this::mapPostToDto)
-                .collect(Collectors.toList()));
+        userDto.setPosts(new ArrayList<>());
         return userDto;
     }
 
