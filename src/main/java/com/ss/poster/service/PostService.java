@@ -41,14 +41,12 @@ public class PostService {
     public Post like(Long postId, Long userId){
         User user = userRepository.findById(userId).get();
         Post post = getById(postId);
-//        if (post.getLikes().contains(user)){
-//            postRepository.deleteById(userId);
-////            post.getLikes().remove(user);
-//        }
-//        else{
-//            post.getLikes().add(user);
-//        }
-        post.getLikes().add(user);
+        if (post.getLikes().contains(user)){
+            post.getLikes().remove(user);
+        }
+        else{
+            post.getLikes().add(user);
+        }
         return postRepository.save(post);
     }
 
