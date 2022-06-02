@@ -1,10 +1,10 @@
 package com.ss.poster.controller;
 
 import com.ss.poster.dto.DtoMapping;
-import com.ss.poster.dto.PostDto;
 import com.ss.poster.dto.UserDto;
 import com.ss.poster.model.User;
 import com.ss.poster.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,18 +16,22 @@ public class UserController {
 
     private final UserService userService;
     private final DtoMapping dtoMapping;
+    private final GetCurrentUserIdFromAuth getUser;
 
-    public UserController(UserService userService, DtoMapping dtoMapping) {
+    public UserController(UserService userService, DtoMapping dtoMapping, GetCurrentUserIdFromAuth getUser) {
         this.userService = userService;
         this.dtoMapping = dtoMapping;
+        this.getUser = getUser;
     }
 
-    @PostMapping
-    public UserDto create(@RequestBody UserDto instance) {
-        return dtoMapping.mapUserToDto(userService.create(dtoMapping.mapDtoToUser(instance)));
-    }
+//    todo: add accesses for admins and moders
 
-    @GetMapping
+//    @PostMapping("/create")
+//    public UserDto create(@RequestBody UserDto instance) {
+//        return dtoMapping.mapUserToDto(userService.create(dtoMapping.mapDtoToUser(instance)));
+//    }
+
+    @GetMapping("/all")
     public List<UserDto> getAll() {
         return userService.getAll().stream()
                 .map(dtoMapping::mapUserToDtoWithoutPosts)
@@ -39,15 +43,20 @@ public class UserController {
         return dtoMapping.mapUserToDto(userService.getById(id));
     }
 
-    @DeleteMapping("/{id}")
-    public UserDto delete(@PathVariable("id") Long id){
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public UserDto delete(){
+        Long id = getUser.getCurrentUserId();
         UserDto userDto = dtoMapping.mapUserToDto(userService.getById(id));
         userService.delete(id);
         return userDto;
     }
 
-    @PutMapping(value="/{id}")
-    public UserDto update(@PathVariable(value = "id") Long id, @RequestBody User instance) {
+//    todo
+    @PutMapping(value="/update")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public UserDto update(@RequestBody User instance) {
+        Long id = getUser.getCurrentUserId();
         return dtoMapping.mapUserToDto(userService.update(id, instance));
     }
 }
