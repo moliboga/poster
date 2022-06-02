@@ -7,16 +7,15 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import com.ss.poster.model.ERole;
-import com.ss.poster.model.Role;
+import com.ss.poster.model.UserRole;
 import com.ss.poster.model.User;
-import com.ss.poster.payload.request.LoginRequest;
-import com.ss.poster.payload.request.SignupRequest;
-import com.ss.poster.payload.response.JwtResponse;
-import com.ss.poster.payload.response.MessageResponse;
+import com.ss.poster.security.payload.request.LoginRequest;
+import com.ss.poster.security.payload.request.SignupRequest;
+import com.ss.poster.security.payload.response.JwtResponse;
 import com.ss.poster.repository.RoleRepository;
 import com.ss.poster.repository.UserRepository;
 import com.ss.poster.security.jwt.JwtUtils;
-import com.ss.poster.service.UserDetailsImpl;
+import com.ss.poster.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,50 +62,38 @@ public class AuthController {
                 roles));
     }
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+    public User registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+
+//        check if username or email exist in database
+        if (userRepository.existsByUsername(signUpRequest.getUsername()) ||
+                userRepository.existsByEmail(signUpRequest.getEmail())) {
+            return null;
         }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }
+
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+        User user = new User();
+        user.setUsername(signUpRequest.getUsername());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+
+//        set userRole
+        String strRole = signUpRequest.getRole();
+        UserRole role;
+        if (strRole == null) {
+            role = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin" -> {
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                    }
-                    case "mod" -> {
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-                    }
-                    default -> {
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                    }
-                }
-            });
+            role = switch (strRole) {
+                case "admin" -> roleRepository.findByName(ERole.ROLE_ADMIN).get();
+                case "mod" -> roleRepository.findByName(ERole.ROLE_MODERATOR).get();
+                default -> roleRepository.findByName(ERole.ROLE_USER).get();
+            };
         }
+
+        Set<UserRole> roles = new HashSet<UserRole>();
+        roles.add(role);
         user.setRoles(roles);
-        userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+
+        return userRepository.save(user);
     }
 }

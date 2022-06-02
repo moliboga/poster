@@ -15,7 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-public class Role extends BaseModel {
+public class UserRole extends BaseModel {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private ERole name;

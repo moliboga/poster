@@ -1,4 +1,4 @@
-package com.ss.poster.service;
+package com.ss.poster.security;
 
 import java.util.Collection;
 import java.util.List;

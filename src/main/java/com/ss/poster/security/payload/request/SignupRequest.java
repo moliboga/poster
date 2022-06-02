@@ -1,4 +1,4 @@
-package com.ss.poster.payload.request;
+package com.ss.poster.security.payload.request;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class SignupRequest {
     @Email
     private String email;
 
-    private Set<String> role;
+    private String role;
 
     @NotBlank
     @Size(min = 6, max = 40)

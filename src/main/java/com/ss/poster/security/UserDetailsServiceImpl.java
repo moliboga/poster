@@ -1,7 +1,8 @@
-package com.ss.poster.service;
+package com.ss.poster.security;
 
 import com.ss.poster.model.User;
 import com.ss.poster.repository.UserRepository;
+import com.ss.poster.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

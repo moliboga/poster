@@ -1,4 +1,4 @@
-package com.ss.poster.payload.response;
+package com.ss.poster.security.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

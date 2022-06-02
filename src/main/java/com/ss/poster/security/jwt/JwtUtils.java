@@ -2,7 +2,7 @@ package com.ss.poster.security.jwt;
 
 import java.util.Date;
 
-import com.ss.poster.service.UserDetailsImpl;
+import com.ss.poster.security.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

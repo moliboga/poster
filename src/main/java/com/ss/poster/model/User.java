@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import javax.management.relation.Role;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -44,15 +45,14 @@ public class User extends BaseModel {
     @NotBlank
     @Size(max = 120)
     private String password;
+
+//    todo: Set<Role> to Role
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
+    private Set<UserRole> roles = new HashSet<>();
+//    @ManyToOne()
+//    @JoinColumn(name="role_id", referencedColumnName = "role_id", insertable = false, updatable = false)
+//    private UserRole userRole;
 }

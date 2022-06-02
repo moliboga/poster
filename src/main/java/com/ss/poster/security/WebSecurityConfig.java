@@ -2,7 +2,6 @@ package com.ss.poster.security;
 
 import com.ss.poster.security.jwt.AuthEntryPointJwt;
 import com.ss.poster.security.jwt.AuthTokenFilter;
-import com.ss.poster.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

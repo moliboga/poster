@@ -1,4 +1,4 @@
-package com.ss.poster.payload.request;
+package com.ss.poster.security.payload.request;
 
 import lombok.Data;
 
