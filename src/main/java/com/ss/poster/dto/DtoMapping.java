@@ -106,7 +106,7 @@ public class DtoMapping {
         userDto.setId(user.getId());
         userDto.setCreatedDate(user.getCreatedAt());
         userDto.setUpdatedDate(user.getUpdatedAt());
-        userDto.setNickname(user.getNickname());
+        userDto.setUsername(user.getUsername());
         userDto.setName(user.getName());
         userDto.setInfo(user.getInfo());
         userDto.setPosts(new ArrayList<>());
@@ -118,7 +118,7 @@ public class DtoMapping {
         user.setId(userDto.getId());
         user.setCreatedAt(userDto.getCreatedDate());
         user.setUpdatedAt(userDto.getUpdatedDate());
-        user.setNickname(userDto.getNickname());
+        user.setUsername(userDto.getUsername());
         user.setName(userDto.getName());
         user.setInfo(userDto.getInfo());
         user.setPosts(postService.getAll()

@@ -41,7 +41,7 @@ public class UserService {
         if (userRepository.findById(id).isPresent()){
             User user = userRepository.findById(id).get();
             user.setName(instanceDetails.getName());
-            user.setNickname(instanceDetails.getNickname());
+            user.setUsername(instanceDetails.getUsername());
             user.setInfo(instanceDetails.getInfo());
             user.setPosts(postRepository
                     .findAll().stream()
