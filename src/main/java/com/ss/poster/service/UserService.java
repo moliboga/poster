@@ -3,6 +3,8 @@ package com.ss.poster.service;
 import com.ss.poster.model.User;
 import com.ss.poster.repository.PostRepository;
 import com.ss.poster.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,16 @@ public class UserService {
         return userRepository.save(instance);
     }
 
+    public String getCurrentUsername(){
+        return ((UserDetails) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal()).getUsername();
+    }
+
+    public Long getCurrentUserId(){
+        String username = getCurrentUsername();
+        return userRepository.findByUsername(username).get().getId();
+    }
+
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -37,16 +49,17 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User update(Long id, User instanceDetails) {
-        if (userRepository.findById(id).isPresent()){
-            User user = userRepository.findById(id).get();
+    public User update(User instanceDetails) {
+        String username = getCurrentUsername();
+        if (userRepository.findByUsername(username).isPresent()){
+            User user = userRepository.findByUsername(username).get();
             user.setName(instanceDetails.getName());
             user.setUsername(instanceDetails.getUsername());
             user.setInfo(instanceDetails.getInfo());
             user.setPosts(postRepository
                     .findAll().stream()
                     .filter(post ->
-                            Objects.equals(post.getUser().getId(), id))
+                            Objects.equals(post.getUser().getId(), user.getId()))
                     .collect(Collectors.toList()));
             return userRepository.save(user);
         }

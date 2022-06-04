@@ -16,22 +16,13 @@ public class UserController {
 
     private final UserService userService;
     private final DtoMapping dtoMapping;
-    private final GetCurrentUserIdFromAuth getUser;
 
-    public UserController(UserService userService, DtoMapping dtoMapping, GetCurrentUserIdFromAuth getUser) {
+    public UserController(UserService userService, DtoMapping dtoMapping) {
         this.userService = userService;
         this.dtoMapping = dtoMapping;
-        this.getUser = getUser;
     }
 
-//    todo: add accesses for admins and moders
-
-//    @PostMapping("/create")
-//    public UserDto create(@RequestBody UserDto instance) {
-//        return dtoMapping.mapUserToDto(userService.create(dtoMapping.mapDtoToUser(instance)));
-//    }
-
-    @GetMapping("/all")
+    @GetMapping()
     public List<UserDto> getAll() {
         return userService.getAll().stream()
                 .map(dtoMapping::mapUserToDtoWithoutPosts)
@@ -43,20 +34,18 @@ public class UserController {
         return dtoMapping.mapUserToDto(userService.getById(id));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping()
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public UserDto delete(){
-        Long id = getUser.getCurrentUserId();
+        Long id = userService.getCurrentUserId();
         UserDto userDto = dtoMapping.mapUserToDto(userService.getById(id));
         userService.delete(id);
         return userDto;
     }
 
-//    todo
-    @PutMapping(value="/update")
+    @PutMapping()
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public UserDto update(@RequestBody User instance) {
-        Long id = getUser.getCurrentUserId();
-        return dtoMapping.mapUserToDto(userService.update(id, instance));
+        return dtoMapping.mapUserToDto(userService.update(instance));
     }
 }
