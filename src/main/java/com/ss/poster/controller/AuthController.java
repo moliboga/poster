@@ -44,6 +44,7 @@ public class AuthController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtils jwtUtils;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -74,6 +75,8 @@ public class AuthController {
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setEmail(signUpRequest.getEmail());
+        user.setInfo(signUpRequest.getInfo());
+        user.setName(signUpRequest.getName());
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
 
 //        set userRole
@@ -90,7 +93,7 @@ public class AuthController {
             };
         }
 
-        Set<UserRole> roles = new HashSet<UserRole>();
+        Set<UserRole> roles = new HashSet<>();
         roles.add(role);
         user.setRoles(roles);
 
