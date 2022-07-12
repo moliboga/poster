@@ -40,8 +40,12 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    public User getCurrentUser(){
+        return userRepository.findByUsername(userService.getCurrentUsername()).get();
+    }
+
     public Post like(Long postId){
-        User user = userRepository.findByUsername(userService.getCurrentUsername()).get();
+        User user = getCurrentUser();
         Post post = getById(postId);
         if (post.getLikes().contains(user)){
             post.getLikes().remove(user);
