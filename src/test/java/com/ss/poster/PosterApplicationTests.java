@@ -6,78 +6,107 @@ import com.ss.poster.repository.PostRepository;
 import com.ss.poster.repository.UserRepository;
 import com.ss.poster.service.PostService;
 import com.ss.poster.service.UserService;
-import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class PosterApplicationTests {
 
     @Mock
-    PostService mockedPostService;
-
-    @Mock
     UserService mockedUserService;
-
     @Mock
     UserRepository mockedUserRepository;
-
     @Mock
     PostRepository mockedPostRepository;
 
-    @Test
-    public void testLike() {
+    private User user;
+    private User user2;
+    private PostService postService;
+    private int likes;
+
+    private void setUserToLike(User user){
+        when(mockedUserRepository.findByUsername(null)).thenReturn(Optional.of(user));
+    }
+
+    private int getCurrentLikes(){
+        return postService.getLikesByPostId(0L).size();
+    }
+
+    @BeforeEach
+    public void init(){
         List<User> users = new ArrayList<>();
 
-        User user = new User();
+        user = new User();
         user.setId(0L);
         user.setUsername("selposhny");
         user.setName("artem");
         user.setInfo("java developer");
         users.add(user);
 
-        User user2 = new User();
+        user2 = new User();
         user2.setId(1L);
         user2.setName("kosbi");
         user2.setInfo("java dedveloper");
-        user2.setUsername("whalehugger");
+        user2.setUsername("libtarded");
 
         Post post = new Post();
         post.setLikes(users);
 
-        PostService postService = new PostService(
+        postService = new PostService(
                 mockedPostRepository,
                 mockedUserRepository,
                 mockedUserService
         );
 
         when(mockedPostRepository.findById(anyLong())).thenReturn(Optional.of(post));
-
-        int oldLikes = postService.getLikesByPostId(0L).size();
-
-        Assertions.assertEquals(1, oldLikes);
-
-        when(mockedUserRepository.findByUsername(anyString())).thenReturn(Optional.of(user2));
-        when(mockedUserRepository.findByUsername(null)).thenReturn(Optional.of(user2));
         when(mockedPostRepository.save(post)).thenReturn(post);
 
+        likes = postService.getLikesByPostId(0L).size();
+    }
+
+    @Test
+    public void when_wasNotLikedAndLike_expectedCountOfLikes_plusOne(){
+        setUserToLike(user2);
         postService.like(0L);
+        Assertions.assertEquals(likes + 1, getCurrentLikes());
+    }
 
-        Assertions.assertEquals(postService.getLikesByPostId(0L).size(), oldLikes + 1);
-
+    @Test
+    public void when_wasLikedAndLike_expectedCountOfLikes_minusOne(){
+        setUserToLike(user);
         postService.like(0L);
+        Assertions.assertEquals(likes - 1, getCurrentLikes());
+    }
 
-        Assertions.assertEquals(postService.getLikesByPostId(0L).size(), oldLikes);
+    @Test
+    public void when_wasNotLikedAndDoubleLike_expectedCountOfLikes_same(){
+        setUserToLike(user2);
+        postService.like(0L);
+        postService.like(0L);
+        Assertions.assertEquals(likes, getCurrentLikes());
+    }
+
+    @Test
+    public void when_wasLikedAndDoubleLike_expectedCountOfLikes_same(){
+        setUserToLike(user);
+        postService.like(0L);
+        postService.like(0L);
+        Assertions.assertEquals(likes, getCurrentLikes());
     }
 }
